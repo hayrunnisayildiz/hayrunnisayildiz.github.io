@@ -54,7 +54,7 @@ const initialProjects: ProjectData[] = [
     icon: 'svelte',
     shortDescription:
       'My personal portfolio: an interactive, macOS-style desktop built with SvelteKit, TailwindCSS and TypeScript.',
-    ...gh('macos-portfolio'),
+    ...gh('hayrunnisayildiz.github.io'),
     technologies: ['Svelte', 'TypeScript', 'TailwindCSS'],
     type: 'application',
   },

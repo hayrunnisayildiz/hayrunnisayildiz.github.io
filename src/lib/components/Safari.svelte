@@ -1,84 +1,96 @@
 <script lang="ts">
   import type { wType } from "../types/wType";
   import { closeWindow, toggleMinimize, toggleMaximize } from "../stores/windowStore";
-  import { onMount } from "svelte";
-  
+  import { site } from "$lib/config";
+  import githubIcon from "$lib/assets/icons/github.png";
+  import GitHubPage from "./safari/GitHubPage.svelte";
+  import LinkedInPage from "./safari/LinkedInPage.svelte";
+
   export let startDrag: (e: MouseEvent, id: string, action: 'move' | 'resize') => void;
   export let window: wType;
 
+  type Page =
+    | { kind: "home"; url: "" }
+    | { kind: "github" | "linkedin" | "web"; url: string }
+    | { kind: "blocked"; url: string; host: string };
+
+  // Sites that refuse to be shown inside another website (X-Frame-Options / CSP)
+  const BLOCKED = ["github.com", "linkedin.com", "google.com", "youtube.com", "x.com", "twitter.com",
+    "instagram.com", "facebook.com", "reddit.com", "medium.com", "stackoverflow.com", "kaggle.com"];
+
+  const linkedinPath = (() => {
+    try { return new URL(site.contact.linkedin).pathname.replace(/\/$/, "").toLowerCase(); } catch { return ""; }
+  })();
+
+  function resolve(input: string): Page {
+    let raw = input.trim();
+    if (!raw) return { kind: "home", url: "" };
+    if (!/^https?:\/\//i.test(raw)) raw = "https://" + raw;
+    let u: URL;
+    try { u = new URL(raw); } catch { return { kind: "web", url: raw }; }
+    const host = u.hostname.replace(/^www\./, "").toLowerCase();
+    const path = u.pathname.replace(/\/$/, "").toLowerCase();
+
+    if (host === "github.com" && (path === "" || path === "/" + site.githubUsername.toLowerCase())) {
+      return { kind: "github", url: site.githubUrl };
+    }
+    if (host === "linkedin.com" && site.contact.linkedin && (path === "" || path === linkedinPath)) {
+      return { kind: "linkedin", url: site.contact.linkedin };
+    }
+    if (BLOCKED.some((b) => host === b || host.endsWith("." + b))) {
+      return { kind: "blocked", url: u.href, host };
+    }
+    return { kind: "web", url: u.href };
+  }
+
+  // Simple history so Back / Forward work for every kind of page
+  let history: Page[] = [{ kind: "home", url: "" }];
+  let index = 0;
+  $: page = history[index];
+  $: canGoBack = index > 0;
+  $: canGoForward = index < history.length - 1;
+
   let url = "";
-  let iframeUrl = "";
   let isLoading = false;
-  let canGoBack = false;
-  let canGoForward = false;
+  let reloadKey = 0;
   let iframeElement: HTMLIFrameElement;
-  let showHomepage = true;
 
-  function handleSubmit() {
-    if (url) {
-      navigateTo(url);
-    }
+
+  // Show a history entry: update the address bar and loading state
+  function show(i: number) {
+    index = i;
+    url = history[i].url;
+    isLoading = history[i].kind === "web";
   }
-
-  function navigateTo(newUrl: string) {
-    if (!newUrl.startsWith('http://') && !newUrl.startsWith('https://')) {
-      newUrl = 'https://' + newUrl;
-    }
-    isLoading = true;
-    iframeUrl = newUrl;
-    url = newUrl;
-    showHomepage = false;
+  function go(p: Page) {
+    history = [...history.slice(0, index + 1), p];
+    show(history.length - 1);
   }
+  const navigateTo = (input: string) => go(resolve(input));
+  const handleSubmit = () => navigateTo(url);
 
-  function openEndlessHorse(url: string) {
-    if (typeof globalThis !== 'undefined') {
-        globalThis.window.open(url, '_blank');
-      }
-  }
-
-  function goBack() {
-    if (canGoBack) {
-      isLoading = true;
-      iframeElement.contentWindow?.history.back();
-    }
-  }
-
-  function goForward() {
-    if (canGoForward) {
-      isLoading = true;
-      iframeElement.contentWindow?.history.forward();
-    }
-  }
-
+  function goBack() { if (canGoBack) show(index - 1); }
+  function goForward() { if (canGoForward) show(index + 1); }
+  function goHome() { if (page.kind !== "home") go({ kind: "home", url: "" }); }
   function refresh() {
-    isLoading = true;
-    iframeElement.src = iframeElement.src;
+    if (page.kind === "web" && iframeElement) { isLoading = true; iframeElement.src = page.url; }
+    else reloadKey += 1;
   }
 
-  function goHome() {
-    iframeUrl = "";
-    url = "";
-    isLoading = false;
-    showHomepage = true;
+  const favorites = [
+    { label: "GitHub", sub: site.githubUsername, target: site.githubUrl, icon: "github" },
+    ...(site.contact.linkedin ? [{ label: "LinkedIn", sub: site.fullName, target: site.contact.linkedin, icon: "linkedin" }] : []),
+    { label: "Wikipedia", sub: "wikipedia.org", target: "https://www.wikipedia.org", icon: "wiki" },
+    { label: "Endless Horse", sub: "endless.horse", target: "external:http://endless.horse/", icon: "horse" },
+  ];
+
+  function openFavorite(target: string) {
+    if (target.startsWith("external:")) globalThis.window.open(target.slice(9), "_blank", "noopener");
+    else navigateTo(target);
   }
-
-  onMount(() => {
-  const handleMessage = (event: MessageEvent) => {
-    if (event.data.type === 'navigate') {
-      navigateTo(event.data.url);
-    }
-  };
-
-  globalThis.addEventListener('message', handleMessage);
-
-  return () => {
-    globalThis.removeEventListener('message', handleMessage);
-  };
-});
-
 </script>
 
-<div class="bg-white h-full rounded-lg flex flex-col overflow-hidde font-sf">
+<div class="bg-white h-full rounded-lg flex flex-col overflow-hidden font-sf">
   <!-- Safari Header -->
   <div class="bg-gray-100 px-2 py-2 flex items-center cursor-move border-b border-gray-200" on:mousedown={(e) => startDrag(e, window.id, "move")}>
     <div class="flex space-x-2 mr-4">
@@ -124,37 +136,58 @@
           type="text" 
           bind:value={url} 
           class="w-full px-3 py-1 rounded-md bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-          placeholder="Enter URL"
+          placeholder="Search or enter website name"
         />
       </form>
     </div>
   </div>
 
   <!-- Safari Body -->
-  <div class="flex-grow relative">
-    {#if showHomepage}
-    <div class="min-h-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center">
-      <div class="text-center text-white">
-        <h1 class="text-4xl font-bold mb-4">Welcome to Safari</h1>
-        <p class="text-xl mb-4">Explore the web with ease</p>
-        <p class="text-sm mb-8">Note: Some websites may not load due to security restrictions</p>
-        <div class="flex space-x-4 justify-center">
-          <button on:click={() => openEndlessHorse('http://endless.horse/')} class="bg-white text-blue-500 px-6 py-2 rounded-full hover:bg-blue-100 transition duration-200 flex items-center justify-center">
-            <span class="mr-2 text-sm">Endless Horse</span>
-            <!-- <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 256 256" xml:space="preserve" class="w-5 h-5">
-              <g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)">
-                <path d="M 30 15 C 13.431 15 0 28.431 0 45 s 13.431 30 30 30 s 30 -13.431 30 -30 S 46.569 15 30 15 z M 30 54 c -4.971 0 -9 -4.029 -9 -9 s 4.029 -9 9 -9 s 9 4.029 9 9 c 0.007 4.964 -4.012 8.993 -8.976 9 C 30.016 54 30.008 54 30 54 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,174,239); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
-                <path d="M 63.72 37.5 c 7.622 2.194 16.62 0 16.62 0 c -2.611 11.4 -10.891 18.54 -22.831 19.409 C 52.777 67.893 41.96 75.007 30 75 l 9 -28.606 C 48.252 16.992 52.994 15 74.935 15 H 90 C 87.48 26.1 78.794 34.579 63.72 37.5 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,140,207); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
-              </g>
-            </svg> -->
-            <!-- <span class="ml-2 text-sm"></span> -->
-          </button>
-          <button on:click={() => navigateTo('https://www.wikipedia.org')} class="bg-white text-purple-500 px-6 py-2 rounded-full hover:bg-purple-100 transition duration-200">
-            Wikipedia
-          </button>
+  <div class="flex-grow relative min-h-0">
+    {#if page.kind === "home"}
+      <div class="h-full overflow-y-auto bg-gradient-to-br from-slate-100 to-slate-200">
+        <div class="max-w-3xl mx-auto px-8 py-12">
+          <h1 class="text-2xl font-bold text-gray-800 mb-6">Favorites</h1>
+          <div class="grid grid-cols-4 gap-6">
+            {#each favorites as f}
+              <button class="group flex flex-col items-center text-center focus:outline-none" on:click={() => openFavorite(f.target)}>
+                <span class="w-20 h-20 rounded-2xl bg-white shadow-sm ring-1 ring-black/5 flex items-center justify-center group-hover:shadow-md group-hover:-translate-y-0.5 group-focus-visible:ring-2 group-focus-visible:ring-blue-500 transition">
+                  {#if f.icon === "github"}
+                    <img src={githubIcon} alt="" class="w-12 h-12" />
+                  {:else if f.icon === "linkedin"}
+                    <span class="w-12 h-12 rounded-xl bg-[#0a66c2] flex items-center justify-center">
+                      <svg viewBox="0 0 24 24" class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/></svg>
+                    </span>
+                  {:else if f.icon === "wiki"}
+                    <span class="text-4xl font-serif text-gray-800">W</span>
+                  {:else}
+                    <span class="text-4xl" aria-hidden="true">🐴</span>
+                  {/if}
+                </span>
+                <span class="mt-2 text-sm font-medium text-gray-800">{f.label}</span>
+                <span class="text-xs text-gray-500 truncate max-w-full">{f.sub}</span>
+              </button>
+            {/each}
+          </div>
+          <p class="mt-12 text-xs text-gray-500">Many websites can't be shown inside another page for security reasons. Those open in a new tab instead.</p>
         </div>
       </div>
-    </div>
+    {:else if page.kind === "github"}
+      <GitHubPage {reloadKey} />
+    {:else if page.kind === "linkedin"}
+      <LinkedInPage />
+    {:else if page.kind === "blocked"}
+      <div class="h-full flex items-center justify-center bg-gray-50 p-8">
+        <div class="max-w-md text-center">
+          <svg viewBox="0 0 24 24" class="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 14l8 0"/></svg>
+          <p class="mt-4 text-lg font-semibold text-gray-800">{page.host} can't be shown in this window</p>
+          <p class="mt-2 text-sm text-gray-600">This website doesn't allow itself to be opened inside another page.</p>
+          <div class="mt-5 flex justify-center gap-2">
+            <button class="px-4 py-2 rounded-md border border-gray-300 text-sm hover:bg-gray-100" on:click={goBack}>Go back</button>
+            <a class="px-4 py-2 rounded-md bg-blue-600 text-white text-sm hover:bg-blue-700" href={page.url} target="_blank" rel="noopener noreferrer">Open in new tab ↗</a>
+          </div>
+        </div>
+      </div>
     {:else}
       {#if isLoading}
         <div class="absolute inset-0 flex items-center justify-center bg-white">
@@ -164,25 +197,14 @@
           </svg>
         </div>
       {/if}
-      <iframe 
-      bind:this={iframeElement}
-      src={iframeUrl}
-      title="browser-frame" 
-      class="w-full h-full border-none"
-      on:load={() => {
-        isLoading = false;
-        try {
-          canGoBack = iframeElement.contentWindow?.history.length > 1;
-          canGoForward = false;
-          url = iframeElement.contentWindow?.location.href || url;
-        } catch (error) {
-          console.log('Unable to access iframe content due to security restrictions');
-          canGoBack = false;
-          canGoForward = false;
-        }
-      }}
-      sandbox="allow-scripts allow-same-origin allow-forms"
-    ></iframe>
+      <iframe
+        bind:this={iframeElement}
+        src={page.url}
+        title="browser-frame"
+        class="w-full h-full border-none"
+        on:load={() => (isLoading = false)}
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+      ></iframe>
     {/if}
   </div>
 </div>

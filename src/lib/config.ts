@@ -44,7 +44,7 @@ export const site = {
     headline: 'Machine Learning · Geostatistics · Geophysics',
     location: '',     // e.g. 'Istanbul, Türkiye'
     email: '',        // e.g. 'hayrunnisa@example.com'
-    linkedin: '',     // e.g. 'https://www.linkedin.com/in/yourname'
+    linkedin: 'https://www.linkedin.com/in/hayrunnisa-yildiz-hy',
     website: '',      // e.g. 'https://hayrunnisayildiz.github.io'
     // Profile photo: put it in static/images/ and set e.g. 'images/profile.jpg'.
     // Left empty, your initials are shown instead.
