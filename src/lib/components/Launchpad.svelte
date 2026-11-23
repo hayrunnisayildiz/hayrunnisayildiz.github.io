@@ -7,6 +7,8 @@
   import projects from '$lib/assets/icons/projects.png';
   import contacts from '$lib/assets/icons/contacts.svg';
   import maps from '$lib/assets/icons/maps.svg';
+  import experienceIcon from '$lib/assets/icons/experience.svg';
+  import { experience } from '$lib/experience';
   import blog from '$lib/assets/icons/blog.png';
   import github from '$lib/assets/icons/github.png';
   import { site } from '$lib/config';
@@ -22,6 +24,7 @@
     { id: 'terminal', name: 'Terminal', icon: terminal },
     { id: 'safari', name: 'Safari', icon: safari },
     { id: 'projects', name: 'Projects', icon: projects },
+    ...(site.apps.experience && experience.length ? [{ id: 'experience', name: 'Experience', icon: experienceIcon }] : []),
     ...(site.apps.maps ? [{ id: 'maps', name: 'Maps', icon: maps }] : []),
     ...(site.apps.contacts ? [{ id: 'contacts', name: 'Contacts', icon: contacts }] : []),
     ...(site.apps.blog ? [{ id: 'blog', name: 'Blog', icon: blog }] : []),

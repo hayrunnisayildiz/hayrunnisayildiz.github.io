@@ -4,6 +4,8 @@
   import type { AppType } from '../types/wType';
   import contacts from '$lib/assets/icons/contacts.svg';
   import maps from '$lib/assets/icons/maps.svg';
+  import experienceIcon from '$lib/assets/icons/experience.svg';
+  import { experience } from '$lib/experience';
 
   export let isAppRunning: (type: AppType) => boolean;
   export let isAppMinimized: (type: AppType) => boolean;
@@ -61,6 +63,7 @@
   $: projectsWindow = $windows.find(w => w.type === 'projects');
   $: contactsWindow = $windows.find(w => w.type === 'contacts');
   $: mapsWindow = $windows.find(w => w.type === 'maps');
+  $: experienceWindow = $windows.find(w => w.type === 'experience');
   $: isLargeScreen = windowWidth >= 1024;
 
 </script>
@@ -110,6 +113,15 @@
       <div class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-green-500 rounded-full"></div>
     {/if}
   </div>
+
+  {#if isLargeScreen && site.apps.experience && experience.length}
+  <div class="dock-item" on:click={() => handleDockClick("experience")}>
+    <img src={experienceIcon} alt="Experience" class="h-12 w-12" />
+    {#if experienceWindow}
+      <div class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-green-500 rounded-full"></div>
+    {/if}
+  </div>
+  {/if}
 
   {#if isLargeScreen && site.apps.maps}
   <div class="dock-item" on:click={() => handleDockClick("maps")}>

@@ -21,6 +21,7 @@ export const site = {
     blog: false,
     contacts: true,
     maps: true,      // places & photos: src/lib/travel.ts
+    experience: true, // internships: src/lib/experience.ts
   },
 
   blog: {
@@ -50,11 +51,5 @@ export const site = {
     // Profile photo: put it in static/images/ and set e.g. 'images/profile.jpg'.
     // Left empty, your initials are shown instead.
     photo: '',
-    education: [
-      // { school: 'Your University', degree: 'B.Sc. ...', years: '2021 – 2025', note: 'Graduation thesis: MinerAI' },
-    ] as { school: string; degree: string; years?: string; note?: string }[],
-    experience: [
-      // { company: 'Company', role: 'Role', years: '2024 – present', note: 'What you did' },
-    ] as { company: string; role: string; years?: string; note?: string }[],
   },
 };

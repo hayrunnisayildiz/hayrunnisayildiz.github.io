@@ -5,7 +5,7 @@ import halfVsPrior from '$lib/assets/projects/smartprior-mt/half-vs-prior.jpg';
 export const smartpriorMTReadme = `
 # SmartPriorMT
 
-*Research project · A smarter starting point for imaging the subsurface*
+*Erasmus+ internship project at the Geological Survey of Finland (GTK) · A smarter starting point for imaging the subsurface*
 
 Magnetotellurics (MT) images what lies underground using natural electromagnetic signals. Turning the
 measurements into a picture is a slow search that usually starts from a blank guess. **SmartPriorMT** uses a

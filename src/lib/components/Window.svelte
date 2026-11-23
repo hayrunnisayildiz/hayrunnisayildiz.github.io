@@ -8,6 +8,7 @@
     import Blog from "./Blog.svelte";
     import Contacts from "./Contacts.svelte";
     import Maps from "./Maps.svelte";
+    import ExperienceApp from "./ExperienceApp.svelte";
   
     export let window: wType;
   
@@ -60,6 +61,8 @@
   <Contacts {window} {startDrag} />
 {:else if window.type === "maps"}
   <Maps {window} {startDrag} />
+{:else if window.type === "experience"}
+  <ExperienceApp {window} {startDrag} />
 {/if}
     
     {#if !window.maximized}

@@ -5,6 +5,7 @@
   import 'github-markdown-css/github-markdown-light.css';
   import { site } from '$lib/config';
   import { youtube } from '$lib/utils/youtube';
+  import { experience, education } from '$lib/experience';
   import { developer } from '$lib/utils/devInfo';
   import { projects } from '$lib/stores/projectStore';
   import { loadReadme } from '$lib/utils/readme';
@@ -151,29 +152,29 @@
       </ul>
     </section>
 
-    {#if c.experience.length}
+    {#if experience.length}
       <section class="card mt-6">
         <h2 class="label">Experience</h2>
         <div class="space-y-4">
-          {#each c.experience as e}
+          {#each experience as e}
             <div>
               <p class="font-medium">{e.role}</p>
-              <p class="text-sm text-white/75">{e.company}{e.years ? ` · ${e.years}` : ''}</p>
-              {#if e.note}<p class="text-sm text-white/60 mt-1">{e.note}</p>{/if}
+              <p class="text-sm text-white/75">{e.company}{e.dates ? ` · ${e.dates}` : ''}</p>
+              {#if e.summary}<p class="text-sm text-white/60 mt-1">{e.summary}</p>{/if}
             </div>
           {/each}
         </div>
       </section>
     {/if}
 
-    {#if c.education.length}
+    {#if education.length}
       <section class="card mt-6">
         <h2 class="label">Education</h2>
         <div class="space-y-4">
-          {#each c.education as e}
+          {#each education as e}
             <div>
               <p class="font-medium">{e.degree}</p>
-              <p class="text-sm text-white/75">{e.school}{e.years ? ` · ${e.years}` : ''}</p>
+              <p class="text-sm text-white/75">{e.school} · {e.dates}</p>
               {#if e.note}<p class="text-sm text-white/60 mt-1">{e.note}</p>{/if}
             </div>
           {/each}

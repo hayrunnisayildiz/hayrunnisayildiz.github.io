@@ -10,6 +10,7 @@
   import { fade } from "svelte/transition";
   import { syncProjectsToFileSystem } from "../utils/syncProjects";
   import { site } from "$lib/config";
+  import { experience } from "$lib/experience";
   const prompt = `${site.username}@macbook`;
 
   $: currentDirectoryPath = `~/${currentDirectory.join("/")}`;
@@ -76,7 +77,7 @@
         addLine("Available commands:");
         addLine("ls       - List directory contents");
         addLine("cd       - Change directory (e.g. cd projects)");
-        addLine("cat      - Display file contents (e.g. cat about, cat projects/minerai)");
+        addLine(`cat      - Display file contents (e.g. cat about${experience.length ? ", cat experience" : ""}, cat education, cat projects/minerai)`);
         addLine("pwd      - Print working directory");
         addLine("clear    - Clear the terminal");
         addLine("date     - Display current date and time");

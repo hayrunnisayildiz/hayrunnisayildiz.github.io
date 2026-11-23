@@ -5,6 +5,7 @@
   import { site } from '$lib/config';
   import Avatar from './Avatar.svelte';
   import { fold } from '$lib/utils/search';
+  import { experience, education } from '$lib/experience';
   import ProjectIcons from './ProjectIcons.svelte';
 
   export let startDrag: (e: MouseEvent, id: string, action: 'move' | 'resize') => void;
@@ -101,32 +102,32 @@
           {/each}
         </div>
 
-        {#if c.experience.length}
+        {#if experience.length}
           <h2 class="mt-8 mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Experience</h2>
           <div class="rounded-xl border border-gray-200 divide-y divide-gray-200">
-            {#each c.experience as e}
+            {#each experience as e}
               <div class="px-4 py-3">
                 <div class="flex justify-between gap-4">
                   <p class="font-medium">{e.role}</p>
-                  {#if e.years}<p class="text-sm text-gray-500 whitespace-nowrap">{e.years}</p>{/if}
+                  <p class="text-sm text-gray-500 whitespace-nowrap">{e.dates}</p>
                 </div>
                 <p class="text-sm text-gray-600">{e.company}</p>
-                {#if e.note}<p class="text-sm text-gray-500 mt-1">{e.note}</p>{/if}
+                {#if e.summary}<p class="text-sm text-gray-500 mt-1">{e.summary}</p>{/if}
               </div>
             {/each}
           </div>
         {/if}
 
-        {#if c.education.length}
+        {#if education.length}
           <h2 class="mt-8 mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Education</h2>
           <div class="rounded-xl border border-gray-200 divide-y divide-gray-200">
-            {#each c.education as e}
+            {#each education as e}
               <div class="px-4 py-3">
                 <div class="flex justify-between gap-4">
                   <p class="font-medium">{e.degree}</p>
-                  {#if e.years}<p class="text-sm text-gray-500 whitespace-nowrap">{e.years}</p>{/if}
+                  <p class="text-sm text-gray-500 whitespace-nowrap">{e.dates}</p>
                 </div>
-                <p class="text-sm text-gray-600">{e.school}</p>
+                <p class="text-sm text-gray-600">{e.school}{e.location ? ` · ${e.location}` : ''}</p>
                 {#if e.note}<p class="text-sm text-gray-500 mt-1">{e.note}</p>{/if}
               </div>
             {/each}

@@ -22,7 +22,7 @@ export function addWindow(type: AppType | "github") {
     return;
   }
 
-  const sizes: Partial<Record<string, [number, number]>> = { contacts: [760, 620], maps: [1040, 660] };
+  const sizes: Partial<Record<string, [number, number]>> = { contacts: [760, 620], maps: [1040, 660], experience: [820, 640] };
   const [windowWidth, windowHeight] = sizes[type] ?? [900, 600];
   const screenWidth = window.innerWidth;
   const screenHeight = window.innerHeight;
