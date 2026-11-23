@@ -20,6 +20,7 @@ export const site = {
     photos: false,
     blog: false,
     contacts: true,
+    maps: true,      // places & photos: src/lib/travel.ts
   },
 
   blog: {

@@ -121,7 +121,7 @@
               <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
             </div>
           {:else}
-            <div class="markdown-body prose prose-sm max-w-none">
+            <div class="markdown-body project-readme prose prose-sm max-w-none">
               <SvelteMarkdown source={readmeContent} {renderers} />
             </div>
           {/if}
@@ -136,6 +136,18 @@
 </div>
 
 <style>
+  /* restore list bullets (reset by Tailwind) */
+  :global(.project-readme ul, .mobile-md ul) { list-style: disc; padding-left: 1.5em; }
+  :global(.project-readme ol, .mobile-md ol) { list-style: decimal; padding-left: 1.5em; }
+  :global(.project-readme li, .mobile-md li) { margin: 0.25em 0; }
+  /* keep project pages to about one screen: cap figure height */
+  :global(.project-readme.markdown-body img) {
+    max-height: 340px;
+    width: auto;
+    margin: 0 auto;
+    display: block;
+    border-radius: 8px;
+  }
   :global(.markdown-body) {
     box-sizing: border-box;
     min-width: 200px;

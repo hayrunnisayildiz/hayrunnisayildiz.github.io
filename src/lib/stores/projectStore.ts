@@ -4,6 +4,7 @@ import { site } from '$lib/config';
 import { mineraiReadme } from '$lib/projects/minerai';
 import { smartpriorReadme } from '$lib/projects/smartprior';
 import { smartpriorMTReadme } from '$lib/projects/smartpriorMT';
+import { portfolioReadme } from '$lib/projects/portfolio';
 
 const gh = (repo: string) => ({
   githubUrl: `${site.githubUrl}/${repo}`,
@@ -20,7 +21,7 @@ const initialProjects: ProjectData[] = [
     name: 'MinerAI — Graduation Thesis',
     icon: 'minerai',
     shortDescription:
-      'Machine learning vs. kriging for 3D gold resource modelling: from raw drill-hole data to a block model, resource estimate and drill targets.',
+      'Graduation thesis: machine learning that maps where gold is likely to be underground, using drill-hole data.',
     ...gh('minerai'),
     readme: mineraiReadme,
     technologies: ['Python', 'scikit-learn', 'XGBoost', 'LightGBM', 'Geostatistics'],
@@ -31,7 +32,7 @@ const initialProjects: ProjectData[] = [
     name: 'SmartPrior',
     icon: 'smartprior',
     shortDescription:
-      'Neural-field priors with uncertainty from sparse drillholes: a Lux.jl network vs. kriging on Keivitsa (Finland) Cu and density data.',
+      'A neural network that predicts rock properties in 3D from drill holes and shows how certain it is.',
     ...gh('SmartPrior'),
     readme: smartpriorReadme,
     technologies: ['Julia', 'Lux.jl', 'Deep Learning', 'Geostatistics'],
@@ -42,7 +43,7 @@ const initialProjects: ProjectData[] = [
     name: 'SmartPriorMT',
     icon: 'smartprior-mt',
     shortDescription:
-      'Gravity + MT informed neural priors as smart starting models for 2D magnetotelluric VFSA inversion.',
+      'A neural network that gives underground imaging a smarter starting point, so it fits the data faster.',
     ...gh('SmartPriorMT'),
     readme: smartpriorMTReadme,
     technologies: ['Julia', 'Lux.jl', 'Geophysics', 'Inversion'],
@@ -53,8 +54,9 @@ const initialProjects: ProjectData[] = [
     name: 'macOS Portfolio',
     icon: 'svelte',
     shortDescription:
-      'My personal portfolio: an interactive, macOS-style desktop built with SvelteKit, TailwindCSS and TypeScript.',
+      'This website: an interactive macOS-style desktop with a terminal, apps and a mobile version.',
     ...gh('hayrunnisayildiz.github.io'),
+    readme: portfolioReadme,
     technologies: ['Svelte', 'TypeScript', 'TailwindCSS'],
     type: 'application',
   },

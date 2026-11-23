@@ -22,8 +22,8 @@ export function addWindow(type: AppType | "github") {
     return;
   }
 
-  const windowWidth = type === "contacts" ? 760 : 900;
-  const windowHeight = type === "contacts" ? 620 : 600;
+  const sizes: Partial<Record<string, [number, number]>> = { contacts: [760, 620], maps: [1040, 660] };
+  const [windowWidth, windowHeight] = sizes[type] ?? [900, 600];
   const screenWidth = window.innerWidth;
   const screenHeight = window.innerHeight;
 

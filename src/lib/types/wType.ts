@@ -1,4 +1,4 @@
-export type AppType = "terminal" | "safari" | "photos" | "blog" | "projects" | "contacts";
+export type AppType = "terminal" | "safari" | "photos" | "blog" | "projects" | "contacts" | "maps";
 
 export interface wType {
     id: string;

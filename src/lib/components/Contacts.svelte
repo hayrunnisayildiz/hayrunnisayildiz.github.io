@@ -4,6 +4,7 @@
   import type { wType } from '../types/wType';
   import { site } from '$lib/config';
   import Avatar from './Avatar.svelte';
+  import { fold } from '$lib/utils/search';
   import ProjectIcons from './ProjectIcons.svelte';
 
   export let startDrag: (e: MouseEvent, id: string, action: 'move' | 'resize') => void;
@@ -20,7 +21,7 @@
   ].filter(Boolean) as { label: string; value: string; href: string; icon: string }[];
 
   let query = '';
-  $: matches = site.fullName.toLocaleLowerCase('tr-TR').includes(query.trim().toLocaleLowerCase('tr-TR'));
+  $: matches = fold(`${site.fullName} ${c.headline}`).includes(fold(query));
 
   function openProject(id: string) {
     requestedProject.set(id);

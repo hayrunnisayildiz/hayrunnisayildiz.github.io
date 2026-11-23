@@ -3,6 +3,7 @@
   import { windows } from '../stores/windowStore';
   import type { AppType } from '../types/wType';
   import contacts from '$lib/assets/icons/contacts.svg';
+  import maps from '$lib/assets/icons/maps.svg';
 
   export let isAppRunning: (type: AppType) => boolean;
   export let isAppMinimized: (type: AppType) => boolean;
@@ -59,6 +60,7 @@
   $: blogWindow = $windows.find(w => w.type === 'blog');
   $: projectsWindow = $windows.find(w => w.type === 'projects');
   $: contactsWindow = $windows.find(w => w.type === 'contacts');
+  $: mapsWindow = $windows.find(w => w.type === 'maps');
   $: isLargeScreen = windowWidth >= 1024;
 
 </script>
@@ -108,6 +110,15 @@
       <div class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-green-500 rounded-full"></div>
     {/if}
   </div>
+
+  {#if isLargeScreen && site.apps.maps}
+  <div class="dock-item" on:click={() => handleDockClick("maps")}>
+    <img src={maps} alt="Maps" class="h-12 w-12" />
+    {#if mapsWindow}
+      <div class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-green-500 rounded-full"></div>
+    {/if}
+  </div>
+  {/if}
 
   {#if isLargeScreen && site.apps.contacts}
   <div class="dock-item" on:click={() => handleDockClick("contacts")}>

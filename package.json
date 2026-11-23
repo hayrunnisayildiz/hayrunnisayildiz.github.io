@@ -28,6 +28,7 @@
 	"type": "module",
 	"dependencies": {
 		"github-markdown-css": "^5.7.0",
+		"globe.gl": "^2.46.2",
 		"prismjs": "^1.29.0",
 		"svelte-markdown": "^0.4.1"
 	}

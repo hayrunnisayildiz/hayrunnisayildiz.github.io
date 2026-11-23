@@ -2,7 +2,7 @@
 
 An interactive, macOS-inspired portfolio: a desktop with a status bar, widgets, a dock, Launchpad and draggable windows.
 
-**Apps:** Terminal (try `help`, `ls`, `cat about`, `cat projects/minerai`) · Projects · Contacts · Safari · GitHub link
+**Apps:** Terminal (try `help`, `ls`, `cat about`, `cat projects/minerai`) · Projects · Maps (3D globe of places I've travelled, with photos) · Contacts · Safari · GitHub link
 **Widgets:** clock and a YouTube music player (Asia Minor — Northern Lights)
 
 Built with [SvelteKit](https://kit.svelte.dev/), [TailwindCSS](https://tailwindcss.com/) and TypeScript.
@@ -23,7 +23,9 @@ npm run build      # static site in ./build
 | Contacts app & mobile page: email, LinkedIn, photo, education, experience | `src/lib/config.ts` → `contact` |
 | Terminal `about` / `interests` text, languages, tools | `src/lib/utils/devInfo.ts` |
 | Projects shown in the Projects app and terminal | `src/lib/stores/projectStore.ts` |
-| Photos (then set `apps.photos: true`) | `src/lib/assets/photos/` |
+| Travel places on the Maps globe | `src/lib/travel.ts` |
+| Travel photos (one folder per place id, e.g. `rome/1.jpg`) | `src/lib/assets/travel/<id>/` |
+| Photos app (then set `apps.photos: true`) | `src/lib/assets/photos/` |
 | Music widget (any YouTube video id) | `src/lib/config.ts` → `music` |
 
 ## Deploy to GitHub Pages
@@ -43,6 +45,9 @@ To test the GitHub Pages build locally: `BASE_PATH=/portfolio npm run build && n
 Phones (screens narrower than 768px) get a simple scrolling page with the same content: about, projects (with the full project pages), skills, contact and music. Tablets and computers get the desktop.
 
 ## Credits
+
+Earth imagery on the Maps globe: NASA Blue Marble (public domain), via [three-globe](https://github.com/vasturiano/three-globe). Globe rendering: [globe.gl](https://github.com/vasturiano/globe.gl) (MIT).
+
 
 Based on [macOS-Themed-Portfolio](https://github.com/ansxuman/macOS-Themed-Portfolio) by ansxuman, licensed under Apache 2.0 (see `LICENSE`).
 This version has been modified: personal content was replaced, the original author's photos, blog worker and deployment scripts were removed, and site settings were centralized in `src/lib/config.ts`.

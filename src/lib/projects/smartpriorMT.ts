@@ -1,72 +1,25 @@
-// Showcase page for SmartPriorMT (shown in the Projects app).
+// Short showcase page for SmartPriorMT (Projects app + mobile page).
+import { site } from '$lib/config';
 import halfVsPrior from '$lib/assets/projects/smartprior-mt/half-vs-prior.jpg';
-import meanHalf from '$lib/assets/projects/smartprior-mt/model-mean-half.jpg';
-import meanPrior from '$lib/assets/projects/smartprior-mt/model-mean-prior.jpg';
-import budget from '$lib/assets/projects/smartprior-mt/budget-overlay.jpg';
 
 export const smartpriorMTReadme = `
 # SmartPriorMT
 
-**Smart starting models for 2D magnetotelluric inversion** · Julia · Lux.jl · MTGeophysics
+*Research project · A smarter starting point for imaging the subsurface*
 
-2D MT inversion usually starts from a flat half-space. SmartPriorMT instead builds a **"smart" prior
-model from gravity and MT data** with a Lux neural network and uses it as the starting model for a
-**VFSA** (very fast simulated annealing) inversion. The question is whether that start makes the
-inversion faster and its result closer to the truth.
+Magnetotellurics (MT) images what lies underground using natural electromagnetic signals. Turning the
+measurements into a picture is a slow search that usually starts from a blank guess. **SmartPriorMT** uses a
+neural network, trained on gravity and MT data, to **produce a better first guess** for that search.
 
-\`\`\`
-Gravity + MT data (Niblett–Bostick) → Lux network → Prior model (μ, σ) → VFSA2DMT (starting model)
-\`\`\`
+![How well the model fits the data during the search (lower is better). Orange: starting from SmartPriorMT's guess. Blue: a blank start](${halfVsPrior})
 
-The forward solver, perturbation and cooling schedule stay the same; **only the starting point changes**.
-Gravity is used to build the prior only, so this is not a joint inversion.
+**Highlights**
 
-## Key findings
+- Starting from the smart guess fit the data faster in every test run
+- It recovered the shape of underground structures more accurately
+- I also documented where it falls short, such as steeply tilted structures
 
-| Question | Answer |
-|---|---|
-| Does the prior fit the data faster? | **Yes:** consistently, from the first iteration, in 3/3 seeds |
-| Does it match the true model better? | **Partly:** structural correlation improves, but absolute amplitude (RMSE) is mixed |
-| Does it work for every geology? | **No:** it can fall behind on steep-dip or resistive-contrast structures |
-| Does VFSA reach the target RMS = 1.0? | **No:** the bottleneck is the RBF parametrization, not the iteration budget |
+**Built with:** Julia · Lux.jl · geophysical inversion
 
-### 1. The prior fits the data about 25 % better
-
-Data RMS after 400 VFSA iterations:
-
-| Seed | Half-space | Prior | Improvement |
-|---|---:|---:|---:|
-| t1 | 4.60 | 3.47 | 25 % |
-| t2 | 5.02 | 3.64 | 27 % |
-| t3 | 5.15 | 3.82 | 26 % |
-
-![Data RMS vs iteration and final RMS for 3 seeds](${halfVsPrior})
-
-### 2. Structure yes, amplitude unclear
-
-Correlation with the true model is higher for the prior in all 3 seeds (e.g. 0.30 vs 0.21),
-but RMSE against the true model is inconsistent. The prior captures *where* conductive and resistive zones are,
-not their exact values.
-
-| Half-space start | Prior start |
-|---|---|
-| ![Mean model, half-space start](${meanHalf}) | ![Mean model, prior start](${meanPrior}) |
-
-### 3. It is a parametrization problem, not a budget problem
-
-![Final RMS vs VFSA budget](${budget})
-
-Raising the budget from 400 to 3000 iterations improved RMS (prior 3.47 → 2.64, half-space 4.60 → 3.50),
-but the gains flattened out: acceptance fell to 4–9 % and the search effectively stopped.
-The prior's advantage holds at every budget. The next lever is the **RBF parametrization**
-(more control points or a narrower kernel), not more iterations.
-
-## Honest limitations
-
-- A single gravity–resistivity relationship is assumed, so reliability drops in mixed-lithology settings (e.g. the Musgrave real-data test)
-- TE mode only so far; σ is not a calibrated uncertainty map and does not enter the inversion
-- Partial inverse crime on the gravity side (same forward operator for synthetic data and inversion)
-- 3D warm-start is out of scope for the upstream package
-
-**Stack:** Julia · Lux.jl · MTGeophysics · Zygote · ForwardDiff · ArchGDAL · Plots
+[Full details and code on GitHub →](${site.githubUrl}/SmartPriorMT)
 `;
